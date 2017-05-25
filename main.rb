@@ -1,6 +1,6 @@
 require './class.rb'
 
-str = gets
+str = 'case a of 1: case end ; end ;'
 
 main = Resolver.new(str)
 

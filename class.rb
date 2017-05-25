@@ -68,10 +68,14 @@ class Resolver
   def caseanls (tokens)
     state = 0
     tokens.each_with_index do |tok, i|
-      if state == 5 && tok == 'case'
-        state = caseanls(tokens[i..tokens.index('end')])
+      if !state
+        break
       else
-        state = table(state, tok)
+        if state == 5 && tok == 'case'
+          state = caseanls(tokens[i..tokens.index('end')])
+        else
+          state = table(state, tok)
+        end
       end
     end
     state
