@@ -1,7 +1,12 @@
 require './class.rb'
 
-str = 'case a of 1: case end ; end ;'
+puts 'Input case construction:'
+str = gets
 
 main = Resolver.new(str)
 
-p main.compile
+if main.compile
+  puts 'Case construction is correct'
+else
+  puts 'Case construction is not correct'
+end

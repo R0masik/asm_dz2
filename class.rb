@@ -8,8 +8,10 @@ class Resolver
     scan @str, @tokens
     if @tokens.empty?
       false
+    elsif caseanls(@tokens) == true
+      true
     else
-      caseanls @tokens
+      false
     end
   end
 
@@ -52,30 +54,28 @@ class Resolver
             else
               if el.to_i.to_s == el
                 tokens << 'num'
+              elsif el =~ /^[a-zA-Z]+[a-zA-Z0-9]*$/
+                tokens << 'id'
               else
-                if el =~ /^[a-zA-Z]+[a-zA-Z0-9]*$/
-                  tokens << 'id'
-                else
-                  tokens.clear
-                  break
-                end
+                tokens.clear
+                break
               end
           end
       end
     end
   end
 
-  def caseanls (tokens)
+  def caseanls(tokens)
     state = 0
     tokens.each_with_index do |tok, i|
       if !state
         break
       else
-        if state == 5 && tok == 'case'
-          state = caseanls(tokens[i..tokens.index('end')])
-        else
-          state = table(state, tok)
-        end
+        state = if state == 5 && tok == 'case'
+                  caseanls(tokens[i..tokens.index('end')])
+                else
+                  table(state, tok)
+                end
       end
     end
     state
