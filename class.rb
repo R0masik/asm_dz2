@@ -2,16 +2,15 @@ class Resolver
   def initialize(s)
     @str = s
     @tokens = []
+    @counter = 0
   end
 
   def compile
     scan @str, @tokens
     if @tokens.empty?
       false
-    elsif caseanls(@tokens) == true
-      true
     else
-      false
+      caseanls(@tokens) == true && @counter.zero?
     end
   end
 
@@ -66,17 +65,21 @@ class Resolver
   end
 
   def caseanls(tokens)
+    @counter += 1
     state = 0
-    tokens.each_with_index do |tok, i|
+    i = 0
+    while i < tokens.size
       if !state
         break
       else
-        state = if state == 5 && tok == 'case'
-                  caseanls(tokens[i..tokens.index('end')])
-                else
-                  table(state, tok)
-                end
+        if state == 5 && tokens[i] == 'case'
+          state = caseanls(tokens[i..tokens.index('end')])
+          i = tokens.index('end')
+        else
+          state = table(state, tokens[i])
+        end
       end
+      i += 1
     end
     state
   end
@@ -107,21 +110,36 @@ class Resolver
       when 8
         if tok == ';'
           9
-        else
-          true if tok == 'end'
+        elsif tok == 'end'
+          @counter -= 1
+          10
         end
-      else
+      when 9
         if tok == 'num'
           4
-        else
-          if tok == 'end'
-            9
-          else
-            tok == ';'
-          end
+        elsif tok == 'end'
+          @counter -= 1
+          10
         end
+      when 10
+        if tok == 'end'
+          @counter -= 1
+          10
+        else
+          tok == ';'
+        end
+      when true
+        if tok == 'num'
+          4
+        elsif tok == 'end'
+          @counter -= 1
+          10
+        end
+      else
+        false
     end
   end
 
   attr_accessor :str
+  attr_reader :tokens
 end
