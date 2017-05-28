@@ -26,9 +26,6 @@ class Resolver
                 if x.to_i.to_s == x
                   tokens << 'num'
                   tokens << ','
-                else
-                  tokens.clear
-                  break
                 end
               end
               tokens.pop
@@ -44,9 +41,6 @@ class Resolver
                   if x.to_i.to_s == x
                     tokens << 'num'
                     tokens << ','
-                  else
-                    tokens.clear
-                    break
                   end
                 end
               end
@@ -73,8 +67,8 @@ class Resolver
         break
       else
         if state == 5 && tokens[i] == 'case'
-          state = caseanls(tokens[i..tokens.index('end')])
-          i = tokens.index('end')
+          state = caseanls(tokens[i..(tokens[i..-1].index('end') + i)])
+          i = tokens[i..-1].index('end') + i
         else
           state = table(state, tokens[i])
         end
